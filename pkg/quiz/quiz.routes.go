@@ -1,17 +1,20 @@
 package quiz
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
-// RegisterRoutes est une fonction qui enregistre toutes les routes liées aux quiz
+// Définir les routes pour les quiz
 func RegisterRoutes(r *gin.Engine) {
 	quizGroup := r.Group("/quiz")
 	{
-		quizGroup.GET("/", GetQuizzes)
-		quizGroup.GET("/:id", GetQuizDetails)
+		quizGroup.GET("/", GetAllQuizzes)
+		quizGroup.GET("/:id", GetQuizByID)
 		quizGroup.POST("/create", CreateQuiz)
 		quizGroup.PUT("/:id", UpdateQuiz)
 		quizGroup.DELETE("/:id", DeleteQuiz)
 	}
+	fmt.Println("✅ Routes quiz enregistrées !") // Ajoute ce log pour confirmer
 }

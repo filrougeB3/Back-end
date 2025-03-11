@@ -1,93 +1,90 @@
 package quiz
 
 import (
-	"fmt"
-	"my-quiz-app/internal/service" // Assure-toi que le service existe dans le bon dossier
 	"net/http"
+	"strconv"
+
+	database "Back-end/db/dbmodels"
 
 	"github.com/gin-gonic/gin"
 )
 
-func GetQuizzes(c *gin.Context) {
-	// Appeler le service pour récupérer les quiz
-	quizzes, err := service.GetAllQuizzes()
+// Obtenir tous les quiz
+func GetAllQuizzes(c *gin.Context) {
+	quizzes, err := database.GetAllQuizzes()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Erreur lors de la récupération des quiz"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de récupérer les quiz"})
 		return
 	}
 	c.JSON(http.StatusOK, quizzes)
 }
 
-func GetQuizDetails(c *gin.Context) {
-	id := c.Param("id")
-	quiz, err := service.GetQuizByID(id)
+// Obtenir un quiz par ID
+func GetQuizByID(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("Quiz avec l'ID %s non trouvé", id)})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID invalide"})
+		return
+	}
+
+	quiz, err := database.GetQuizByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur récupération quiz"})
 		return
 	}
 	c.JSON(http.StatusOK, quiz)
 }
 
+// Créer un quiz
 func CreateQuiz(c *gin.Context) {
-	var quiz service.Quiz
+	var quiz database.Quiz
 	if err := c.ShouldBindJSON(&quiz); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Données invalides"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Format JSON invalide"})
 		return
 	}
 
-	// Appeler le service pour créer un quiz
-	createdQuiz, err := service.CreateQuiz(quiz)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Erreur lors de la création du quiz"})
+	if err := database.CreateQuiz(quiz); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la création du quiz"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, createdQuiz)
+	c.JSON(http.StatusCreated, gin.H{"message": "Quiz créé avec succès"})
 }
 
+// Modifier un quiz
 func UpdateQuiz(c *gin.Context) {
-	id := c.Param("id")
-	var quiz service.Quiz
-
-	// Vérification de l'existence du quiz
-	err := service.GetQuizByID(id)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("Quiz avec l'ID %s non trouvé", id)})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID invalide"})
 		return
 	}
 
-	// Mise à jour des informations du quiz
+	var quiz database.Quiz
 	if err := c.ShouldBindJSON(&quiz); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Données invalides"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Format JSON invalide"})
 		return
 	}
 
-	// Appeler le service pour mettre à jour le quiz
-	updatedQuiz, err := service.UpdateQuiz(id, quiz)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Erreur lors de la mise à jour du quiz"})
+	if err := database.UpdateQuiz(id, quiz); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la mise à jour du quiz"})
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedQuiz)
+	c.JSON(http.StatusOK, gin.H{"message": "Quiz mis à jour avec succès"})
 }
 
+// Supprimer un quiz
 func DeleteQuiz(c *gin.Context) {
-	id := c.Param("id")
-
-	// Vérifier si le quiz existe avant de le supprimer
-	quiz, err := service.GetQuizByID(id)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("Quiz avec l'ID %s non trouvé", id)})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID invalide"})
 		return
 	}
 
-	// Appeler le service pour supprimer le quiz
-	err = service.DeleteQuiz(id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Erreur lors de la suppression du quiz"})
+	if err := database.DeleteQuiz(id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la suppression du quiz"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Quiz avec l'ID %s supprimé avec succès", quiz.ID)})
+	c.JSON(http.StatusOK, gin.H{"message": "Quiz supprimé avec succès"})
 }
