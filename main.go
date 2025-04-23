@@ -1,40 +1,34 @@
 package main
 
 import (
-	"Back-end/db"
-	"Back-end/db/dbmodels"
-	"Back-end/pkg/proposition"
-	"Back-end/pkg/question"
-	"Back-end/pkg/quiz"
-	"fmt"
+	"log"
+	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
+	"Back-end/db"
+	"Back-end/pkg/auth"
+
+	"github.com/gorilla/mux"
+	"github.com/joho/godotenv" // Importer godotenv
 )
 
 func main() {
-	// Initialise la connexion à la base de données
-	db.InitDB()
-
-	// Utiliser GORM avec la même DATABASE_URL
-	databaseUrl := db.GetDatabaseURL()
-	var err error
-	gormDB, err = gorm.Open(postgres.Open(databaseUrl), &gorm.Config{})
+	// Charger les variables d'environnement depuis le fichier .env
+	err := godotenv.Load()
 	if err != nil {
-		panic("Échec de la connexion GORM : " + err.Error())
+		log.Fatal("Erreur de chargement du fichier .env")
 	}
 
-	dbmodels.Migrate(gormDB)
-	db.SetGormDB(gormDB)
+	// Initialiser la connexion à la base de données
+	db.InitDB()
+	db.InitSupabase()
 
-	r := gin.Default()
+	// Créer un nouveau routeur
+	router := mux.NewRouter()
 
-	quiz.RegisterQuizRoutes(r)
-	question.RegisterQuestionRoutes(r)
-	proposition.RegisterPropositionRoutes(r)
+	// Définir les routes d'authentification
+	auth.AuthRoute(router)
 
-	// Lancer le serveur sur le port 8080
-	fmt.Println("🚀 Serveur lancé sur http://localhost:8080")
-	r.Run(":8080")
+	// Démarrer le serveur HTTP
+	log.Println("🚀 Le serveur tourne sur le port 8080")
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
