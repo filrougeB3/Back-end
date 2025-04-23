@@ -1,37 +1,46 @@
 package db
 
 import (
-	"context"
-	"fmt"
+	"database/sql"
 	"log"
 	"os"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+	"github.com/supabase-community/supabase-go"
 )
 
-var Conn *pgx.Conn
+var (
+	DB       *sql.DB
+	Supabase *supabase.Client
+)
 
-// InitDB initialise la connexion à la base de données
+// InitDB initialise la connexion à la base de données (PostgreSQL)
 func InitDB() {
-	// Charger les variables d'environnement depuis le fichier .env
-	err := godotenv.Load()
+	dbUrl := os.Getenv("SUPABASE_DB_URL")
+	if dbUrl == "" {
+		log.Fatal("SUPABASE_DB_URL non définie dans .env")
+	}
+
+	var err error
+	DB, err = sql.Open("postgres", dbUrl)
 	if err != nil {
-		log.Fatal("Erreur lors du chargement du fichier .env")
+		log.Fatal("Erreur de connexion à la base de données : ", err)
 	}
 
-	// Récupérer l'URL de la base de données
-	databaseUrl := os.Getenv("DATABASE_URL")
-	if databaseUrl == "" {
-		log.Fatal("DATABASE_URL non définie dans .env")
+	if err := DB.Ping(); err != nil {
+		log.Fatal("Échec de la connexion à la base de données : ", err)
 	}
 
-	// Connexion à PostgreSQL
-	conn, err := pgx.Connect(context.Background(), databaseUrl)
+	log.Println("✅ Connexion à la base de données réussie !")
+}
+
+// InitSupabase initialise le client Supabase
+func InitSupabase() {
+	var err error
+	Supabase, err = supabase.NewClient(os.Getenv("SUPABASE_URL"), os.Getenv("SUPABASE_KEY"), &supabase.ClientOptions{})
 	if err != nil {
-		log.Fatalf("Impossible de se connecter à la base : %v", err)
+		log.Fatalf("Erreur lors de l'initialisation de Supabase : %v", err)
 	}
 
-	fmt.Println("✅ Connexion à PostgreSQL réussie !")
-	Conn = conn
+	log.Println("✅ Client Supabase initialisé !")
 }
