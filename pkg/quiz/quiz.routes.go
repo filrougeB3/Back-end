@@ -1,20 +1,18 @@
 package quiz
 
 import (
-	"fmt"
+	"Back-end/pkg/quiz/controller"
 
 	"github.com/gin-gonic/gin"
 )
 
-// Définir les routes pour les quiz
-func RegisterRoutes(r *gin.Engine) {
+func RegisterQuizRoutes(r *gin.Engine) {
 	quizGroup := r.Group("/quiz")
 	{
-		quizGroup.GET("/", GetAllQuizzes)
-		quizGroup.GET("/:id", GetQuizByID)
-		quizGroup.POST("/create", CreateQuiz)
-		quizGroup.PUT("/:id", UpdateQuiz)
-		quizGroup.DELETE("/:id", DeleteQuiz)
+		quizGroup.GET("", controller.GetAllQuizzes)
+		quizGroup.GET(":id", controller.GetQuizByID)
+		quizGroup.POST("/create", controller.CreateQuiz)
+		quizGroup.PUT(":id", controller.UpdateQuiz)
+		quizGroup.DELETE(":id", controller.DeleteQuiz)
 	}
-	fmt.Println("✅ Routes quiz enregistrées !") // Ajoute ce log pour confirmer
 }

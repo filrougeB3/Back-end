@@ -8,11 +8,20 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
+	"gorm.io/gorm"
 )
 
 var Conn *pgx.Conn
+var gormDB *gorm.DB
 
-// InitDB initialise la connexion à la base de données
+func SetGormDB(db *gorm.DB) {
+	gormDB = db
+}
+
+func GetGormDB() *gorm.DB {
+	return gormDB
+}
+
 func InitDB() {
 	// Charger les variables d'environnement depuis le fichier .env
 	err := godotenv.Load()
@@ -34,4 +43,15 @@ func InitDB() {
 
 	fmt.Println("✅ Connexion à PostgreSQL réussie !")
 	Conn = conn
+}
+func GetDatabaseURL() string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Erreur .env")
+	}
+	url := os.Getenv("DATABASE_URL")
+	if url == "" {
+		log.Fatal("DATABASE_URL non défini")
+	}
+	return url
 }
