@@ -4,30 +4,22 @@ import (
 	"database/sql"
 	"log"
 	"os"
-	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
-	"gorm.io/gorm"
-  _ "github.com/lib/pq"
+
+	_ "github.com/lib/pq"
 	"github.com/supabase-community/supabase-go"
 )
-
-var Conn *pgx.Conn
-var gormDB *gorm.DB
-
-func SetGormDB(db *gorm.DB) {
-	gormDB = db
-}
-
-func GetGormDB() *gorm.DB {
-	return gormDB
-}
 
 var (
 	DB       *sql.DB
 	Supabase *supabase.Client
 )
 
-// InitDB initialise la connexion à la base de données (PostgreSQL)
+// GetDB retourne l'instance actuelle de la base de données SQL
+func GetDB() *sql.DB {
+	return DB
+}
+
+// InitDB initialise la connexion à la base de données PostgreSQL
 func InitDB() {
 	dbUrl := os.Getenv("SUPABASE_DB_URL")
 	if dbUrl == "" {
@@ -44,7 +36,7 @@ func InitDB() {
 		log.Fatal("Échec de la connexion à la base de données : ", err)
 	}
 
-	log.Println("✅ Connexion à la base de données réussie !")
+	log.Println("✅ Connexion à la base de données réussie avec database/sql !")
 }
 
 // InitSupabase initialise le client Supabase

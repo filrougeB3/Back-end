@@ -3,16 +3,17 @@ package quiz
 import (
 	"Back-end/pkg/quiz/controller"
 
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
-func RegisterQuizRoutes(r *gin.Engine) {
-	quizGroup := r.Group("/quiz")
-	{
-		quizGroup.GET("", controller.GetAllQuizzes)
-		quizGroup.GET(":id", controller.GetQuizByID)
-		quizGroup.POST("/create", controller.CreateQuiz)
-		quizGroup.PUT(":id", controller.UpdateQuiz)
-		quizGroup.DELETE(":id", controller.DeleteQuiz)
-	}
+func RegisterQuizRoutes(router chi.Router) {
+	router.Route("/quiz", func(r chi.Router) {
+		r.Use(middleware.Logger)
+		r.Get("/", controller.GetAllQuizzes)
+		r.Get("/{id}", controller.GetQuizByID)
+		r.Post("/create", controller.CreateQuiz)
+		r.Put("/{id}", controller.UpdateQuiz)
+		r.Delete("/{id}", controller.DeleteQuiz)
+	})
 }

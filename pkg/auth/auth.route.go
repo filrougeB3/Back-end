@@ -1,21 +1,16 @@
 package auth
 
 import (
-	"net/http"
-
 	"github.com/go-chi/chi/v5"
-	"github.com/gorilla/mux"
 )
 
-var AuthRoute = func(router *mux.Router) {
-	r := chi.NewRouter()
+func RegisterAuthRoutes(router chi.Router) {
+	router.Route("/auth", func(r chi.Router) {
+		// Routes non protégées
+		r.Post("/register", CreateUser)
+		r.Post("/login", LoginUser)
 
-	// Routes non protégées par le middleware
-	r.Post("/auth/register", CreateUser)
-	r.Post("/auth/login", LoginUser)
-
-	// Routes protégées par le middleware
-	r.With(AuthMiddleware).Post("/auth/logout", LogoutUser)
-
-	http.ListenAndServe(":8080", r)
+		// Routes protégées
+		r.With(AuthMiddleware).Post("/logout", LogoutUser)
+	})
 }

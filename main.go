@@ -6,29 +6,33 @@ import (
 
 	"Back-end/db"
 	"Back-end/pkg/auth"
+	"Back-end/pkg/quiz"
 
-	"github.com/gorilla/mux"
-	"github.com/joho/godotenv" // Importer godotenv
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	// Charger les variables d'environnement depuis le fichier .env
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Erreur de chargement du fichier .env")
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("❌ Erreur de chargement du fichier .env")
 	}
 
-	// Initialiser la connexion à la base de données
+	// Initialiser la base de données et Supabase
 	db.InitDB()
 	db.InitSupabase()
 
-	// Créer un nouveau routeur
-	router := mux.NewRouter()
+	// Créer le routeur Chi
+	router := chi.NewRouter()
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
 
-	// Définir les routes d'authentification
-	auth.AuthRoute(router)
+	// Enregistrement des routes
+	auth.RegisterAuthRoutes(router)
+	quiz.RegisterQuizRoutes(router)
 
-	// Démarrer le serveur HTTP
+	// Lancement du serveur
 	log.Println("🚀 Le serveur tourne sur le port 8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
