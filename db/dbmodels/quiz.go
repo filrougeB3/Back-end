@@ -11,7 +11,7 @@ type Quiz struct {
 	CreatedAt   time.Time `json:"created_at"`
 	Themes      string    `json:"themes"`
 	IdUser      uint      `json:"id_user"`
-	IdJeux      uint      `json:"id_jeux"`
+	IdJeux      uint      `json:"id_game"`
 
-	Questions []Question `gorm:"foreignKey:IdQuiz" json:"questions"` // Relation 1-n avec Question
+	Questions []Question `json:"questions"`
 }
