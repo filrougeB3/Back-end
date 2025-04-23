@@ -4,10 +4,23 @@ import (
 	"database/sql"
 	"log"
 	"os"
-
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5"
+	"github.com/joho/godotenv"
+	"gorm.io/gorm"
+  _ "github.com/lib/pq"
 	"github.com/supabase-community/supabase-go"
 )
+
+var Conn *pgx.Conn
+var gormDB *gorm.DB
+
+func SetGormDB(db *gorm.DB) {
+	gormDB = db
+}
+
+func GetGormDB() *gorm.DB {
+	return gormDB
+}
 
 var (
 	DB       *sql.DB
