@@ -7,6 +7,7 @@ import (
 	"Back-end/db"
 	"Back-end/pkg/auth"
 	"Back-end/pkg/quiz"
+	"Back-end/pkg/user"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -31,6 +32,7 @@ func main() {
 	// Enregistrement des routes
 	auth.RegisterAuthRoutes(router)
 	quiz.RegisterQuizRoutes(router)
+	user.UserRoutes(router)
 
 	// Lancement du serveur
 	log.Println("🚀 Le serveur tourne sur le port 8080")
