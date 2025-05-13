@@ -10,6 +10,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 func main() {
@@ -19,6 +20,17 @@ func main() {
 
 	// Créer le routeur Chi
 	router := chi.NewRouter()
+	// Configuration CORS
+	cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"}, // Autorise toutes les origines
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	})
+
+	router.Use(cors.Handler)
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 
