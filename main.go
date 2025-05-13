@@ -10,15 +10,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	// Charger les variables d'environnement depuis le fichier .env
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("❌ Erreur de chargement du fichier .env")
-	}
-
 	// Initialiser la base de données et Supabase
 	db.InitDB()
 	db.InitSupabase()
