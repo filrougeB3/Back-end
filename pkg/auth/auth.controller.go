@@ -38,12 +38,18 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	newToken, err := db.Supabase.Auth.RefreshToken(authResp.RefreshToken)
+	if err != nil {
+		http.Error(w, "Erreur lors de la génération du nouveau token", http.StatusInternalServerError)
+		return
+	}
+
 	resp := RegisterResponse{
 		IDUser:       iduser,
 		Email:        req.Email,
 		Pseudo:       req.Pseudo,
-		AuthToken:    authResp.AccessToken,
-		RefreshToken: authResp.RefreshToken,
+		AuthToken:    newToken.AccessToken,
+		RefreshToken: newToken.RefreshToken,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
