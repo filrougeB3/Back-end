@@ -7,13 +7,19 @@ import (
 	"Back-end/db"
 	"Back-end/pkg/auth"
 	"Back-end/pkg/quiz"
+	"Back-end/pkg/user"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Erreur lors du chargement du fichier .env :", err)
+	}
 	// Initialiser la base de données et Supabase
 	db.InitDB()
 	db.InitSupabase()
@@ -37,6 +43,7 @@ func main() {
 	// Enregistrement des routes
 	auth.RegisterAuthRoutes(router)
 	quiz.RegisterQuizRoutes(router)
+	user.RegisterUserRoutes(router)
 
 	// Lancement du serveur
 	log.Println("🚀 Le serveur tourne sur le port 8080")
