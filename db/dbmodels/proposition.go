@@ -1,10 +1,10 @@
 package dbmodels
 
 type Proposition struct {
-	ID         uint   `gorm:"primaryKey" json:"id"`
+	ID         int    `json:"id"`
 	Valeur     string `json:"valeur"`
 	IsCorrect  bool   `json:"is_correct"`
-	IdQuestion uint   `json:"id_question"`
+	IdQuestion int    `json:"id_question"`
 
-	Question Question `gorm:"foreignKey:IdQuestion" json:"-"`
+	// Pas de liaison directe, à gérer manuellement si besoin
 }

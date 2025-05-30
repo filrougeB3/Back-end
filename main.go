@@ -1,15 +1,14 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
 	"Back-end/db"
 	"Back-end/pkg/auth"
 	"Back-end/pkg/quiz"
+	"log"
+	"net/http"
 
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 )
 

@@ -1,12 +1,12 @@
 package dbmodels
 
 type Question struct {
-	ID            uint   `gorm:"primaryKey" json:"id"`
+	ID            int    `json:"id"`
 	Intitule      string `json:"intitulé"`
-	IdQuiz        uint   `json:"id_quiz"`
-	IdType        uint   `json:"id_type"`
-	IdProposition uint   `json:"id_proposition"`
+	IdQuiz        int    `json:"id_quiz"`
+	IdType        int    `json:"id_type"`
+	IdProposition int    `json:"id_proposition"`
 
-	TypeQuestion TypeQuestion  `gorm:"foreignKey:IdType" json:"type_question"` // Relation avec TypeQuestion
-	Propositions []Proposition `gorm:"foreignKey:IdQuestion" json:"propositions"`
+	TypeQuestion *TypeQuestion `json:"type_question,omitempty"` // à remplir manuellement si besoin
+	Propositions []Proposition `json:"propositions,omitempty"`  // idem
 }

@@ -2,18 +2,24 @@ package quiz
 
 import (
 	"Back-end/pkg/quiz/controller"
+	"log"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 )
 
 func RegisterQuizRoutes(router chi.Router) {
+	// Enregistrer les routes pour /quiz
 	router.Route("/quiz", func(r chi.Router) {
-		r.Use(middleware.Logger)
 		r.Get("/", controller.GetAllQuizzes)
-		r.Get("/{id}", controller.GetQuizByID)
 		r.Post("/create", controller.CreateQuiz)
-		r.Put("/{id}", controller.UpdateQuiz)
-		r.Delete("/{id}", controller.DeleteQuiz)
+
+		// Routes utilisant {id} pour gérer un quiz spécifique
+		r.Route("/{id}", func(r chi.Router) {
+			r.Get("/", controller.GetQuizByID)
+			r.Put("/", controller.UpdateQuiz)
+			r.Delete("/", controller.DeleteQuiz)
+		})
 	})
+
+	log.Println("✅ Routes quiz bien enregistrées !")
 }
