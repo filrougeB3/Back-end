@@ -5,21 +5,21 @@ import (
 	"log"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func RegisterQuizRoutes(router chi.Router) {
-	// Enregistrer les routes pour /quiz
 	router.Route("/quiz", func(r chi.Router) {
+		r.Use(middleware.Logger)
+
+		// ✅ Routes fonctionnelles
 		r.Get("/", controller.GetAllQuizzes)
 		r.Post("/create", controller.CreateQuiz)
 
-		// Routes utilisant {id} pour gérer un quiz spécifique
-		r.Route("/{id}", func(r chi.Router) {
-			r.Get("/", controller.GetQuizByID)
-			r.Put("/", controller.UpdateQuiz)
-			r.Delete("/", controller.DeleteQuiz)
-		})
+		// ✅ Nouvelles routes avec ID en query param
+		router.Get("/quizByQuery", controller.GetQuizByID)
+		router.Put("/quizByQuery", controller.UpdateQuiz)
+		router.Delete("/quizByQuery", controller.DeleteQuiz)
 	})
-
-	log.Println("✅ Routes quiz bien enregistrées !")
+	log.Println("✅ Routes quiz enregistrées !")
 }
