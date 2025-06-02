@@ -13,5 +13,6 @@ type Quiz struct {
 	IdUser      string    `json:"id_user"`
 	IdJeux      int       `json:"id_game"`
 
-	Questions []Question `json:"questions"`
+	Questions []Question `json:"questions,omitempty"` // optionnel
+
 }

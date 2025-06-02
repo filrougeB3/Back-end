@@ -75,7 +75,6 @@ func GetQuizByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(q)
 }
 
-// POST /quiz/create
 func CreateQuiz(w http.ResponseWriter, r *http.Request) {
 	var q dbmodels.Quiz
 	if err := json.NewDecoder(r.Body).Decode(&q); err != nil {
@@ -83,14 +82,65 @@ func CreateQuiz(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := db.DB.QueryRow(
+	// Démarrer transaction
+	tx, err := db.DB.Begin()
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Erreur transaction")
+		return
+	}
+
+	// Insert quiz et récupère ID
+	err = tx.QueryRow(
 		`INSERT INTO quiz (title, description, created_at, themes, id_user, id_game) 
 		VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
 		q.Title, q.Description, q.CreatedAt, q.Themes, q.IdUser, q.IdJeux,
 	).Scan(&q.ID)
 
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Erreur lors de la création")
+		tx.Rollback()
+		respondWithError(w, http.StatusInternalServerError, "Erreur lors de la création du quiz")
+		return
+	}
+
+	// Insert questions et propositions si présentes
+	for i, question := range q.Questions {
+		var questionID int
+		err = tx.QueryRow(
+			`INSERT INTO questions (title, id_quiz, id_type) VALUES ($1, $2, $3) RETURNING id`,
+			question.Title, q.ID, question.IdType,
+		).Scan(&questionID)
+		if err != nil {
+			log.Printf("💥 Erreur SQL lors de l'insertion question : %+v", err)
+			respondWithError(w, http.StatusInternalServerError, "Erreur lors de la création d'une question")
+			tx.Rollback()
+			respondWithError(w, http.StatusInternalServerError, "Erreur lors de la création d'une question")
+			return
+		}
+
+		// update l'ID dans la structure pour retour JSON
+		q.Questions[i].ID = questionID
+
+		// insert propositions pour la question
+		for j, prop := range question.Propositions {
+			var propID int
+			err = tx.QueryRow(
+				`INSERT INTO propositions (value, is_correct, id_question) VALUES ($1, $2, $3) RETURNING id`,
+				prop.Value, prop.IsCorrect, questionID,
+			).Scan(&propID)
+			if err != nil {
+				tx.Rollback()
+				respondWithError(w, http.StatusInternalServerError, "Erreur lors de la création d'une proposition")
+				return
+			}
+
+			q.Questions[i].Propositions[j].ID = propID
+			q.Questions[i].Propositions[j].IdQuestion = questionID
+		}
+	}
+
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Erreur lors du commit")
 		return
 	}
 
