@@ -1,7 +1,6 @@
 package quiz
 
 import (
-	"Back-end/pkg/quiz/controller"
 	"log"
 
 	"github.com/go-chi/chi/v5"
@@ -12,14 +11,15 @@ func RegisterQuizRoutes(router chi.Router) {
 	router.Route("/quiz", func(r chi.Router) {
 		r.Use(middleware.Logger)
 
-		// ✅ Routes fonctionnelles
-		r.Get("/", controller.GetAllQuizzes)
-		r.Post("/create", controller.CreateQuiz)
+		// ✅ Routes classiques
+		r.Get("/", GetAllQuizzes)
+		r.Post("/create", CreateQuiz)
 
-		// ✅ Nouvelles routes avec ID en query param
-		router.Get("/quizByQuery", controller.GetQuizByID)
-		router.Put("/quizByQuery", controller.UpdateQuiz)
-		router.Delete("/quizByQuery", controller.DeleteQuiz)
+		// ✅ Routes avec ID en query param : /quiz/byQuery?id=42
+		r.Get("/byQuery", GetQuizByID)
+		r.Put("/byQuery", UpdateQuiz)
+		r.Delete("/byQuery", DeleteQuiz)
 	})
+
 	log.Println("✅ Routes quiz enregistrées !")
 }
