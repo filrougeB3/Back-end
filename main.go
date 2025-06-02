@@ -1,16 +1,17 @@
 package main
 
 import (
+	"Back-end/db"
+	"Back-end/pkg/auth"
+	"Back-end/pkg/propositions"
+	"Back-end/pkg/question"
+	"Back-end/pkg/quiz"
 	"log"
 	"net/http"
 
-	"Back-end/db"
-	"Back-end/pkg/auth"
-	"Back-end/pkg/quiz"
-
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -37,6 +38,8 @@ func main() {
 	// Enregistrement des routes
 	auth.RegisterAuthRoutes(router)
 	quiz.RegisterQuizRoutes(router)
+	question.RegisterQuestionRoutes(router)
+	propositions.RegisterPropositionRoutes(router)
 
 	// Lancement du serveur
 	log.Println("🚀 Le serveur tourne sur le port 8080")
