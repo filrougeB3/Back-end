@@ -15,17 +15,23 @@ import (
 )
 
 func main() {
-	// Charger les variables d'environnement depuis le fichier .env
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("❌ Erreur de chargement du fichier .env")
-	}
-
 	// Initialiser la base de données et Supabase
 	db.InitDB()
 	db.InitSupabase()
 
 	// Créer le routeur Chi
 	router := chi.NewRouter()
+	// Configuration CORS
+	cors := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"}, // Autorise toutes les origines
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	})
+
+	router.Use(cors.Handler)
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 
