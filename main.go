@@ -16,9 +16,6 @@ import (
 )
 
 func main() {
-	// Initialiser la base de données et Supabase
-	db.InitDB()
-	db.InitSupabase()
 
 	// Charger les variables d'environnement depuis le fichier .env
 	if err := godotenv.Load(); err != nil {
@@ -26,6 +23,10 @@ func main() {
 		log.Fatal("❌ Erreur de chargement du fichier .env")
 
 	}
+
+	// Initialiser la base de données et Supabase
+	db.InitDB()
+	db.InitSupabase()
 
 	// Créer le routeur Chi
 	router := chi.NewRouter()
