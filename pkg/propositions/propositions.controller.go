@@ -22,6 +22,45 @@ func parseIDQueryParam(r *http.Request) (int, error) {
 	return strconv.Atoi(idStr)
 }
 
+func GetAllPropositions(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.DB.Query(`SELECT id, value, is_correct, id_question FROM propositions`)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Erreur récupération des propositions")
+		return
+	}
+	defer rows.Close()
+
+	var propositions []dbmodels.Proposition
+	for rows.Next() {
+		var p dbmodels.Proposition
+		if err := rows.Scan(&p.ID, &p.Value, &p.IsCorrect, &p.IdQuestion); err != nil {
+			respondWithError(w, http.StatusInternalServerError, "Erreur lecture des propositions")
+			return
+		}
+		propositions = append(propositions, p)
+	}
+
+	json.NewEncoder(w).Encode(propositions)
+}
+
+func GetPropositionByID(w http.ResponseWriter, r *http.Request) {
+	id, err := parseIDQueryParam(r)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "ID manquant ou invalide")
+		return
+	}
+
+	var p dbmodels.Proposition
+	err = db.DB.QueryRow(`SELECT id, value, is_correct, id_question FROM propositions WHERE id = $1`, id).
+		Scan(&p.ID, &p.Value, &p.IsCorrect, &p.IdQuestion)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, "Proposition non trouvée")
+		return
+	}
+
+	json.NewEncoder(w).Encode(p)
+}
+
 // POST /proposition/create
 func CreateProposition(w http.ResponseWriter, r *http.Request) {
 	var p dbmodels.Proposition
