@@ -29,6 +29,45 @@ func parseIDQueryParam(r *http.Request) (int, error) {
 	return id, nil
 }
 
+func GetAllQuestions(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.DB.Query(`SELECT id, title, id_quiz, id_type FROM questions`)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Erreur récupération des questions")
+		return
+	}
+	defer rows.Close()
+
+	var questions []dbmodels.Question
+	for rows.Next() {
+		var q dbmodels.Question
+		if err := rows.Scan(&q.ID, &q.Title, &q.IdQuiz, &q.IdType); err != nil {
+			respondWithError(w, http.StatusInternalServerError, "Erreur lecture des questions")
+			return
+		}
+		questions = append(questions, q)
+	}
+
+	json.NewEncoder(w).Encode(questions)
+}
+
+func GetQuestionByID(w http.ResponseWriter, r *http.Request) {
+	id, err := parseIDQueryParam(r)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "ID manquant ou invalide")
+		return
+	}
+
+	var q dbmodels.Question
+	err = db.DB.QueryRow(`SELECT id, title, id_quiz, id_type FROM questions WHERE id = $1`, id).
+		Scan(&q.ID, &q.Title, &q.IdQuiz, &q.IdType)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, "Question non trouvée")
+		return
+	}
+
+	json.NewEncoder(w).Encode(q)
+}
+
 func CreateQuestion(w http.ResponseWriter, r *http.Request) {
 	var q dbmodels.Question
 	if err := json.NewDecoder(r.Body).Decode(&q); err != nil {
