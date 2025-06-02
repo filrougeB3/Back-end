@@ -3,6 +3,7 @@ package main
 import (
 	"Back-end/db"
 	"Back-end/pkg/auth"
+	"Back-end/pkg/propositions"
 	"Back-end/pkg/question"
 	"Back-end/pkg/quiz"
 	"log"
@@ -32,6 +33,7 @@ func main() {
 	auth.RegisterAuthRoutes(router)
 	quiz.RegisterQuizRoutes(router)
 	question.RegisterQuestionRoutes(router)
+	propositions.RegisterPropositionRoutes(router)
 
 	// Lancement du serveur
 	log.Println("🚀 Le serveur tourne sur le port 8080")
