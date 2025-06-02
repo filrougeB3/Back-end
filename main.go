@@ -6,6 +6,7 @@ import (
 	"Back-end/pkg/propositions"
 	"Back-end/pkg/question"
 	"Back-end/pkg/quiz"
+	"Back-end/pkg/user"
 	"log"
 	"net/http"
 
@@ -15,6 +16,10 @@ import (
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Erreur lors du chargement du fichier .env :", err)
+	}
 	// Initialiser la base de données et Supabase
 	db.InitDB()
 	db.InitSupabase()
@@ -38,6 +43,7 @@ func main() {
 	// Enregistrement des routes
 	auth.RegisterAuthRoutes(router)
 	quiz.RegisterQuizRoutes(router)
+	user.RegisterUserRoutes(router)
 	question.RegisterQuestionRoutes(router)
 	propositions.RegisterPropositionRoutes(router)
 
