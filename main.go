@@ -12,12 +12,20 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
+	"github.com/rs/cors"
 )
 
 func main() {
 	// Initialiser la base de données et Supabase
 	db.InitDB()
 	db.InitSupabase()
+
+	// Charger les variables d'environnement depuis le fichier .env
+	if err := godotenv.Load(); err != nil {
+
+		log.Fatal("❌ Erreur de chargement du fichier .env")
+
+	}
 
 	// Créer le routeur Chi
 	router := chi.NewRouter()
