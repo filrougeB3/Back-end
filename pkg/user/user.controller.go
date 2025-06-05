@@ -2,13 +2,14 @@ package user
 
 import (
 	"Back-end/db"
+	"Back-end/pkg/security"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(UserIDKey).(string)
+	userID := r.Context().Value(security.UserIDKey).(string)
 
 	query := "SELECT iduser, email, pseudo, country, profile_picture_url FROM users WHERE iduser = $1"
 	var user User
@@ -24,7 +25,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(UserIDKey).(string)
+	userID := r.Context().Value(security.UserIDKey).(string)
 
 	var user User
 	err := json.NewDecoder(r.Body).Decode(&user)

@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"Back-end/pkg/security"
+
 	"github.com/go-chi/chi/v5"
 )
 
@@ -11,6 +13,6 @@ func RegisterAuthRoutes(router chi.Router) {
 		r.Post("/login", LoginUser)
 
 		// Routes protégées
-		r.With(AuthMiddleware).Post("/logout", LogoutUser)
+		r.With(security.AuthMiddleware).Post("/logout", LogoutUser)
 	})
 }
