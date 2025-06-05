@@ -1,4 +1,4 @@
-package propositions
+package proposition
 
 import (
 	"Back-end/pkg/security"

@@ -10,7 +10,17 @@ import (
 	"github.com/supabase-community/gotrue-go/types"
 )
 
-// Crée un nouvel utilisateur
+// CreateUser godoc
+// @Summary Créer un nouvel utilisateur
+// @Description Crée un nouvel utilisateur avec email, pseudo et mot de passe
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param user body RegisterRequest true "Informations de l'utilisateur"
+// @Success 201 {object} RegisterResponse
+// @Failure 400
+// @Failure 500
+// @Router /auth/register [post]
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var req RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -51,7 +61,17 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
-// Connexion de l'utilisateur
+// LoginUser godoc
+// @Summary Connexion utilisateur
+// @Description Connecte un utilisateur avec email et mot de passe
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param credentials body LoginRequest true "Identifiants de connexion"
+// @Success 200 {object} LoginResponse
+// @Failure 400
+// @Failure 401
+// @Router /auth/login [post]
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

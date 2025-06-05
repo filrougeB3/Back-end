@@ -1,0 +1,640 @@
+basePath: /
+definitions:
+  auth.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.LoginResponse:
+    properties:
+      auth_token:
+        type: string
+      email:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  auth.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      pseudo:
+        type: string
+    type: object
+  auth.RegisterResponse:
+    properties:
+      auth_token:
+        type: string
+      email:
+        type: string
+      iduser:
+        type: string
+      pseudo:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  proposition.Proposition:
+    properties:
+      id:
+        type: integer
+      id_question:
+        type: integer
+      is_correct:
+        type: boolean
+      value:
+        type: string
+    type: object
+  question.Question:
+    properties:
+      id:
+        type: integer
+      id_quiz:
+        type: integer
+      id_type:
+        type: integer
+      propositions:
+        items:
+          $ref: '#/definitions/proposition.Proposition'
+        type: array
+      title:
+        type: string
+      type_question:
+        $ref: '#/definitions/question.TypeQuestion'
+    type: object
+  question.TypeQuestion:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  quiz.Quiz:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      id_game:
+        type: integer
+      id_user:
+        type: string
+      pseudo:
+        description: Utilisé seulement pour les GET
+        type: string
+      questions:
+        description: optionnel
+        items:
+          $ref: '#/definitions/question.Question'
+        type: array
+      themes:
+        type: string
+      title:
+        type: string
+    type: object
+  user.User:
+    properties:
+      country:
+        type: string
+      email:
+        type: string
+      iduser:
+        type: string
+      profile_picture_url:
+        type: string
+      pseudo:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Backend de l'application NoLedge, une plateforme de quiz en ligne
+  title: NoLedge API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Connecte un utilisateur avec email et mot de passe
+      parameters:
+      - description: Identifiants de connexion
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.LoginResponse'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+      summary: Connexion utilisateur
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Crée un nouvel utilisateur avec email, pseudo et mot de passe
+      parameters:
+      - description: Informations de l'utilisateur
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/auth.RegisterResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      summary: Créer un nouvel utilisateur
+      tags:
+      - auth
+  /proposition/all:
+    get:
+      consumes:
+      - application/json
+      description: Récupère la liste de toutes les propositions disponibles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/proposition.Proposition'
+            type: array
+        "500":
+          description: Internal Server Error
+      summary: Récupérer toutes les propositions
+      tags:
+      - proposition
+  /proposition/create:
+    post:
+      consumes:
+      - application/json
+      description: Crée une nouvelle proposition
+      parameters:
+      - description: Informations de la proposition
+        in: body
+        name: proposition
+        required: true
+        schema:
+          $ref: '#/definitions/proposition.Proposition'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/proposition.Proposition'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Créer une nouvelle proposition
+      tags:
+      - proposition
+  /proposition/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Supprime une proposition
+      parameters:
+      - description: ID de la proposition
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Supprimer une proposition
+      tags:
+      - proposition
+  /proposition/get:
+    get:
+      consumes:
+      - application/json
+      description: Récupère les détails d'une proposition spécifique
+      parameters:
+      - description: ID de la proposition
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proposition.Proposition'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Récupérer une proposition par son ID
+      tags:
+      - proposition
+  /proposition/update:
+    put:
+      consumes:
+      - application/json
+      description: Met à jour les informations d'une proposition existante
+      parameters:
+      - description: ID de la proposition
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Nouvelles informations de la proposition
+        in: body
+        name: proposition
+        required: true
+        schema:
+          $ref: '#/definitions/proposition.Proposition'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/proposition.Proposition'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Mettre à jour une proposition
+      tags:
+      - proposition
+  /question/all:
+    get:
+      consumes:
+      - application/json
+      description: Récupère la liste de toutes les questions disponibles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/question.Question'
+            type: array
+        "500":
+          description: Internal Server Error
+      summary: Récupérer toutes les questions
+      tags:
+      - question
+  /question/create:
+    post:
+      consumes:
+      - application/json
+      description: Crée une nouvelle question
+      parameters:
+      - description: Informations de la question
+        in: body
+        name: question
+        required: true
+        schema:
+          $ref: '#/definitions/question.Question'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/question.Question'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Créer une nouvelle question
+      tags:
+      - question
+  /question/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Supprime une question et toutes ses propositions associées
+      parameters:
+      - description: ID de la question
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Supprimer une question
+      tags:
+      - question
+  /question/get:
+    get:
+      consumes:
+      - application/json
+      description: Récupère les détails d'une question spécifique
+      parameters:
+      - description: ID de la question
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/question.Question'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Récupérer une question par son ID
+      tags:
+      - question
+  /question/update:
+    put:
+      consumes:
+      - application/json
+      description: Met à jour les informations d'une question existante
+      parameters:
+      - description: ID de la question
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Nouvelles informations de la question
+        in: body
+        name: question
+        required: true
+        schema:
+          $ref: '#/definitions/question.Question'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/question.Question'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Mettre à jour une question
+      tags:
+      - question
+  /quiz/all:
+    get:
+      consumes:
+      - application/json
+      description: Récupère la liste de tous les quiz disponibles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/quiz.Quiz'
+            type: array
+        "500":
+          description: Internal Server Error
+      summary: Récupérer tous les quiz
+      tags:
+      - quiz
+  /quiz/byQuery:
+    delete:
+      consumes:
+      - application/json
+      description: Supprime un quiz et toutes ses questions associées
+      parameters:
+      - description: ID du quiz
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Supprimer un quiz
+      tags:
+      - quiz
+    get:
+      consumes:
+      - application/json
+      description: Récupère les détails d'un quiz spécifique
+      parameters:
+      - description: ID du quiz
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/quiz.Quiz'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Récupérer un quiz par son ID
+      tags:
+      - quiz
+    put:
+      consumes:
+      - application/json
+      description: Met à jour les informations d'un quiz existant
+      parameters:
+      - description: ID du quiz
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Nouvelles informations du quiz
+        in: body
+        name: quiz
+        required: true
+        schema:
+          $ref: '#/definitions/quiz.Quiz'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/quiz.Quiz'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Mettre à jour un quiz
+      tags:
+      - quiz
+  /quiz/create:
+    post:
+      consumes:
+      - application/json
+      description: Crée un nouveau quiz avec ses questions et propositions
+      parameters:
+      - description: Informations du quiz
+        in: body
+        name: quiz
+        required: true
+        schema:
+          $ref: '#/definitions/quiz.Quiz'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/quiz.Quiz'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - BearerAuth: []
+      summary: Créer un nouveau quiz
+      tags:
+      - quiz
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Récupère les informations de l'utilisateur connecté
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.User'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Récupérer les informations de l'utilisateur
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Met à jour les informations de l'utilisateur connecté
+      parameters:
+      - description: Informations de l'utilisateur
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Mettre à jour les informations de l'utilisateur
+      tags:
+      - user
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
