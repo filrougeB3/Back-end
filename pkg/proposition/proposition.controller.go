@@ -1,4 +1,4 @@
-package propositions
+package proposition
 
 import (
 	"encoding/json"
@@ -8,19 +8,15 @@ import (
 	"Back-end/db"
 )
 
-func respondWithError(w http.ResponseWriter, code int, message string) {
-	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(map[string]string{"error": message})
-}
-
-func parseIDQueryParam(r *http.Request) (int, error) {
-	idStr := r.URL.Query().Get("id")
-	if idStr == "" {
-		return 0, nil
-	}
-	return strconv.Atoi(idStr)
-}
-
+// GetAllPropositions godoc
+// @Summary Récupérer toutes les propositions
+// @Description Récupère la liste de toutes les propositions disponibles
+// @Tags proposition
+// @Accept json
+// @Produce json
+// @Success 200 {array} Proposition
+// @Failure 500
+// @Router /proposition/all [get]
 func GetAllPropositions(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.DB.Query(`SELECT id, value, is_correct, id_question FROM propositions`)
 	if err != nil {
@@ -42,6 +38,17 @@ func GetAllPropositions(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(propositions)
 }
 
+// GetPropositionByID godoc
+// @Summary Récupérer une proposition par son ID
+// @Description Récupère les détails d'une proposition spécifique
+// @Tags proposition
+// @Accept json
+// @Produce json
+// @Param id query int true "ID de la proposition"
+// @Success 200 {object} Proposition
+// @Failure 400
+// @Failure 404
+// @Router /proposition/get [get]
 func GetPropositionByID(w http.ResponseWriter, r *http.Request) {
 	id, err := parseIDQueryParam(r)
 	if err != nil {
@@ -60,7 +67,18 @@ func GetPropositionByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-// POST /proposition/create
+// CreateProposition godoc
+// @Summary Créer une nouvelle proposition
+// @Description Crée une nouvelle proposition
+// @Tags proposition
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param proposition body Proposition true "Informations de la proposition"
+// @Success 201 {object} Proposition
+// @Failure 400
+// @Failure 500
+// @Router /proposition/create [post]
 func CreateProposition(w http.ResponseWriter, r *http.Request) {
 	var p Proposition
 	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
@@ -82,7 +100,19 @@ func CreateProposition(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-// PUT /proposition/update?id=1
+// UpdateProposition godoc
+// @Summary Mettre à jour une proposition
+// @Description Met à jour les informations d'une proposition existante
+// @Tags proposition
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id query int true "ID de la proposition"
+// @Param proposition body Proposition true "Nouvelles informations de la proposition"
+// @Success 200 {object} Proposition
+// @Failure 400
+// @Failure 500
+// @Router /proposition/update [put]
 func UpdateProposition(w http.ResponseWriter, r *http.Request) {
 	id, err := parseIDQueryParam(r)
 	if err != nil || id == 0 {
@@ -109,7 +139,18 @@ func UpdateProposition(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-// DELETE /proposition/delete?id=1
+// DeleteProposition godoc
+// @Summary Supprimer une proposition
+// @Description Supprime une proposition
+// @Tags proposition
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id query int true "ID de la proposition"
+// @Success 204 "No Content"
+// @Failure 400
+// @Failure 500
+// @Router /proposition/delete [delete]
 func DeleteProposition(w http.ResponseWriter, r *http.Request) {
 	id, err := parseIDQueryParam(r)
 	if err != nil || id == 0 {
@@ -124,4 +165,17 @@ func DeleteProposition(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func respondWithError(w http.ResponseWriter, code int, message string) {
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(map[string]string{"error": message})
+}
+
+func parseIDQueryParam(r *http.Request) (int, error) {
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		return 0, nil
+	}
+	return strconv.Atoi(idStr)
 }

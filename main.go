@@ -3,19 +3,30 @@ package main
 import (
 	"Back-end/db"
 	"Back-end/pkg/auth"
-	"Back-end/pkg/propositions"
+	"Back-end/pkg/proposition"
 	"Back-end/pkg/question"
 	"Back-end/pkg/quiz"
 	"Back-end/pkg/user"
 	"log"
 	"net/http"
 
+	_ "Back-end/docs" // Ceci est important pour charger la documentation Swagger
+
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+// @title NoLedge API
+// @version 1.0
+// @description Backend de l'application NoLedge, une plateforme de quiz en ligne
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -41,12 +52,17 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 
+	// Swagger UI
+	router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
+	))
+
 	// Enregistrement des routes
 	auth.RegisterAuthRoutes(router)
 	quiz.RegisterQuizRoutes(router)
 	user.RegisterUserRoutes(router)
 	question.RegisterQuestionRoutes(router)
-	propositions.RegisterPropositionRoutes(router)
+	proposition.RegisterPropositionRoutes(router)
 
 	// Lancement du serveur
 	log.Println("🚀 Le serveur tourne sur le port 8080")

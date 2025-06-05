@@ -9,25 +9,15 @@ import (
 	"Back-end/db"
 )
 
-func respondWithError(w http.ResponseWriter, code int, message string) {
-	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(map[string]string{"error": message})
-}
-
-func parseIDQueryParam(r *http.Request) (int, error) {
-	idStr := r.URL.Query().Get("id")
-	if idStr == "" {
-		return 0, nil
-	}
-
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		return 0, err
-	}
-
-	return id, nil
-}
-
+// GetAllQuestions godoc
+// @Summary Récupérer toutes les questions
+// @Description Récupère la liste de toutes les questions disponibles
+// @Tags question
+// @Accept json
+// @Produce json
+// @Success 200 {array} Question
+// @Failure 500
+// @Router /question/all [get]
 func GetAllQuestions(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.DB.Query(`SELECT id, title, id_quiz, id_type FROM questions`)
 	if err != nil {
@@ -49,6 +39,17 @@ func GetAllQuestions(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(questions)
 }
 
+// GetQuestionByID godoc
+// @Summary Récupérer une question par son ID
+// @Description Récupère les détails d'une question spécifique
+// @Tags question
+// @Accept json
+// @Produce json
+// @Param id query int true "ID de la question"
+// @Success 200 {object} Question
+// @Failure 400
+// @Failure 404
+// @Router /question/get [get]
 func GetQuestionByID(w http.ResponseWriter, r *http.Request) {
 	id, err := parseIDQueryParam(r)
 	if err != nil {
@@ -67,6 +68,18 @@ func GetQuestionByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(q)
 }
 
+// CreateQuestion godoc
+// @Summary Créer une nouvelle question
+// @Description Crée une nouvelle question
+// @Tags question
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param question body Question true "Informations de la question"
+// @Success 201 {object} Question
+// @Failure 400
+// @Failure 500
+// @Router /question/create [post]
 func CreateQuestion(w http.ResponseWriter, r *http.Request) {
 	var q Question
 	if err := json.NewDecoder(r.Body).Decode(&q); err != nil {
@@ -88,6 +101,19 @@ func CreateQuestion(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(q)
 }
 
+// UpdateQuestion godoc
+// @Summary Mettre à jour une question
+// @Description Met à jour les informations d'une question existante
+// @Tags question
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id query int true "ID de la question"
+// @Param question body Question true "Nouvelles informations de la question"
+// @Success 200 {object} Question
+// @Failure 400
+// @Failure 500
+// @Router /question/update [put]
 func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 	id, err := parseIDQueryParam(r)
 	if err != nil {
@@ -115,6 +141,18 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(q)
 }
 
+// DeleteQuestion godoc
+// @Summary Supprimer une question
+// @Description Supprime une question et toutes ses propositions associées
+// @Tags question
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id query int true "ID de la question"
+// @Success 204 "No Content"
+// @Failure 400
+// @Failure 500
+// @Router /question/delete [delete]
 func DeleteQuestion(w http.ResponseWriter, r *http.Request) {
 	id, err := parseIDQueryParam(r)
 	if err != nil {
@@ -137,4 +175,23 @@ func DeleteQuestion(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func respondWithError(w http.ResponseWriter, code int, message string) {
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(map[string]string{"error": message})
+}
+
+func parseIDQueryParam(r *http.Request) (int, error) {
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		return 0, nil
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }

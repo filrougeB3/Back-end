@@ -1,4 +1,4 @@
-package propositions
+package proposition
 
 type Proposition struct {
 	ID         int    `json:"id"`

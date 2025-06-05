@@ -31,7 +31,15 @@ func parseIDQueryParam(r *http.Request) (int, error) {
 	return id, nil
 }
 
-// GET /quiz/all
+// GetAllQuizzes godoc
+// @Summary Récupérer tous les quiz
+// @Description Récupère la liste de tous les quiz disponibles
+// @Tags quiz
+// @Accept json
+// @Produce json
+// @Success 200 {array} Quiz
+// @Failure 500
+// @Router /quiz/all [get]
 func GetAllQuizzes(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.DB.Query(`
 		SELECT q.id, q.title, q.description, q.created_at, q.themes, q.id_user, q.id_game, u.pseudo 
@@ -57,7 +65,17 @@ func GetAllQuizzes(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(quizzes)
 }
 
-// GET /quiz?id=1
+// GetQuizByID godoc
+// @Summary Récupérer un quiz par son ID
+// @Description Récupère les détails d'un quiz spécifique
+// @Tags quiz
+// @Accept json
+// @Produce json
+// @Param id query int true "ID du quiz"
+// @Success 200 {object} Quiz
+// @Failure 400
+// @Failure 404
+// @Router /quiz/byQuery [get]
 func GetQuizByID(w http.ResponseWriter, r *http.Request) {
 	log.Println("➡️ URL appelée :", r.URL.Path)
 
@@ -83,6 +101,18 @@ func GetQuizByID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(q)
 }
 
+// CreateQuiz godoc
+// @Summary Créer un nouveau quiz
+// @Description Crée un nouveau quiz avec ses questions et propositions
+// @Tags quiz
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param quiz body Quiz true "Informations du quiz"
+// @Success 201 {object} Quiz
+// @Failure 400
+// @Failure 500
+// @Router /quiz/create [post]
 func CreateQuiz(w http.ResponseWriter, r *http.Request) {
 	var q Quiz
 	if err := json.NewDecoder(r.Body).Decode(&q); err != nil {
@@ -155,7 +185,19 @@ func CreateQuiz(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(q)
 }
 
-// PUT /quiz/update?id=1
+// UpdateQuiz godoc
+// @Summary Mettre à jour un quiz
+// @Description Met à jour les informations d'un quiz existant
+// @Tags quiz
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id query int true "ID du quiz"
+// @Param quiz body Quiz true "Nouvelles informations du quiz"
+// @Success 200 {object} Quiz
+// @Failure 400
+// @Failure 500
+// @Router /quiz/byQuery [put]
 func UpdateQuiz(w http.ResponseWriter, r *http.Request) {
 	id, err := parseIDQueryParam(r)
 	if err != nil {
@@ -184,7 +226,19 @@ func UpdateQuiz(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(q)
 }
 
-// DELETE /quiz/delete?id=1
+// DeleteQuiz godoc
+// @Summary Supprimer un quiz
+// @Description Supprime un quiz et toutes ses questions associées
+// @Tags quiz
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id query int true "ID du quiz"
+// @Success 204 "No Content"
+// @Failure 400
+// @Failure 404
+// @Failure 500
+// @Router /quiz/byQuery [delete]
 func DeleteQuiz(w http.ResponseWriter, r *http.Request) {
 	id, err := parseIDQueryParam(r)
 	if err != nil {

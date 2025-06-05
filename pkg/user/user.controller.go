@@ -8,6 +8,17 @@ import (
 	"net/http"
 )
 
+// GetUser godoc
+// @Summary Récupérer les informations de l'utilisateur
+// @Description Récupère les informations de l'utilisateur connecté
+// @Tags user
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} User
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /user [get]
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(security.UserIDKey).(string)
 
@@ -24,6 +35,19 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
+// UpdateUser godoc
+// @Summary Mettre à jour les informations de l'utilisateur
+// @Description Met à jour les informations de l'utilisateur connecté
+// @Tags user
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param user body User true "Informations de l'utilisateur"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /user [put]
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value(security.UserIDKey).(string)
 
