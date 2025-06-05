@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"Back-end/db"
-	"Back-end/db/dbmodels"
 )
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
@@ -34,17 +33,21 @@ func parseIDQueryParam(r *http.Request) (int, error) {
 
 // GET /quiz/all
 func GetAllQuizzes(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.DB.Query("SELECT id, title, description, created_at, themes, id_user, id_game FROM quiz")
+	rows, err := db.DB.Query(`
+		SELECT q.id, q.title, q.description, q.created_at, q.themes, q.id_user, q.id_game, u.pseudo 
+		FROM quiz q
+		LEFT JOIN users u ON q.id_user = u.iduser
+	`)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Erreur lors de la récupération")
 		return
 	}
 	defer rows.Close()
 
-	var quizzes []dbmodels.Quiz
+	var quizzes []Quiz
 	for rows.Next() {
-		var q dbmodels.Quiz
-		if err := rows.Scan(&q.ID, &q.Title, &q.Description, &q.CreatedAt, &q.Themes, &q.IdUser, &q.IdJeux); err != nil {
+		var q Quiz
+		if err := rows.Scan(&q.ID, &q.Title, &q.Description, &q.CreatedAt, &q.Themes, &q.IdUser, &q.IdJeux, &q.Pseudo); err != nil {
 			respondWithError(w, http.StatusInternalServerError, "Erreur lors du scan")
 			return
 		}
@@ -64,9 +67,14 @@ func GetQuizByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	row := db.DB.QueryRow("SELECT id, title, description, created_at, themes, id_user, id_game FROM quiz WHERE id = $1", id)
-	var q dbmodels.Quiz
-	err = row.Scan(&q.ID, &q.Title, &q.Description, &q.CreatedAt, &q.Themes, &q.IdUser, &q.IdJeux)
+	row := db.DB.QueryRow(`
+		SELECT q.id, q.title, q.description, q.created_at, q.themes, q.id_user, q.id_game, u.pseudo 
+		FROM quiz q
+		LEFT JOIN users u ON q.id_user = u.iduser
+		WHERE q.id = $1
+	`, id)
+	var q Quiz
+	err = row.Scan(&q.ID, &q.Title, &q.Description, &q.CreatedAt, &q.Themes, &q.IdUser, &q.IdJeux, &q.Pseudo)
 	if err != nil {
 		http.Error(w, "Quiz introuvable", http.StatusNotFound)
 		return
@@ -76,7 +84,7 @@ func GetQuizByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateQuiz(w http.ResponseWriter, r *http.Request) {
-	var q dbmodels.Quiz
+	var q Quiz
 	if err := json.NewDecoder(r.Body).Decode(&q); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Format invalide")
 		return
@@ -113,7 +121,6 @@ func CreateQuiz(w http.ResponseWriter, r *http.Request) {
 			log.Printf("💥 Erreur SQL lors de l'insertion question : %+v", err)
 			respondWithError(w, http.StatusInternalServerError, "Erreur lors de la création d'une question")
 			tx.Rollback()
-			respondWithError(w, http.StatusInternalServerError, "Erreur lors de la création d'une question")
 			return
 		}
 
@@ -156,7 +163,7 @@ func UpdateQuiz(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var q dbmodels.Quiz
+	var q Quiz
 	if err := json.NewDecoder(r.Body).Decode(&q); err != nil {
 		http.Error(w, "Format invalide", http.StatusBadRequest)
 		return
