@@ -24,9 +24,11 @@ import (
 // @description Backend de l'application NoLedge, une plateforme de quiz en ligne
 // @host localhost:8080
 // @BasePath /
+// @schemes http https
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
+// @x-extension-openapi {"servers":[{"url":"http://localhost:8080","description":"Serveur local"},{"url":"https://back-end-73xk.onrender.com","description":"Serveur de production"}]}
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -54,7 +56,7 @@ func main() {
 
 	// Swagger UI
 	router.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
+		httpSwagger.URL("/swagger/doc.json"), // URL relative pour fonctionner sur tous les serveurs
 	))
 
 	// Enregistrement des routes

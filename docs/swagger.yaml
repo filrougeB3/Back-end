@@ -574,16 +574,8 @@ paths:
             $ref: '#/definitions/user.User'
         "401":
           description: Unauthorized
-          schema:
-            additionalProperties:
-              type: string
-            type: object
         "500":
           description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
       security:
       - BearerAuth: []
       summary: Récupérer les informations de l'utilisateur
@@ -611,30 +603,24 @@ paths:
             type: object
         "400":
           description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
         "401":
           description: Unauthorized
-          schema:
-            additionalProperties:
-              type: string
-            type: object
         "500":
           description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
       security:
       - BearerAuth: []
       summary: Mettre à jour les informations de l'utilisateur
       tags:
       - user
+schemes:
+- http
+- https
 securityDefinitions:
   BearerAuth:
     in: header
     name: Authorization
     type: apiKey
+    x-extension-openapi: '{"servers":[{"url":"http://localhost:8080","description":"Serveur
+      local"},{"url":"https://back-end-73xk.onrender.com","description":"Serveur de
+      production"}]}'
 swagger: "2.0"

@@ -732,22 +732,10 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                        "description": "Unauthorized"
                     },
                     "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -790,31 +778,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                        "description": "Bad Request"
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                        "description": "Unauthorized"
                     },
                     "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -996,7 +966,8 @@ const docTemplate = `{
         "BearerAuth": {
             "type": "apiKey",
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "x-extension-openapi": "{\"servers\":[{\"url\":\"http://localhost:8080\",\"description\":\"Serveur local\"},{\"url\":\"https://back-end-73xk.onrender.com\",\"description\":\"Serveur de production\"}]}"
         }
     }
 }`
@@ -1006,7 +977,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
 	BasePath:         "/",
-	Schemes:          []string{},
+	Schemes:          []string{"http", "https"},
 	Title:            "NoLedge API",
 	Description:      "Backend de l'application NoLedge, une plateforme de quiz en ligne",
 	InfoInstanceName: "swagger",

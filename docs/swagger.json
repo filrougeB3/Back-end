@@ -1,4 +1,8 @@
 {
+    "schemes": [
+        "http",
+        "https"
+    ],
     "swagger": "2.0",
     "info": {
         "description": "Backend de l'application NoLedge, une plateforme de quiz en ligne",
@@ -726,22 +730,10 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                        "description": "Unauthorized"
                     },
                     "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                        "description": "Internal Server Error"
                     }
                 }
             },
@@ -784,31 +776,13 @@
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                        "description": "Bad Request"
                     },
                     "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                        "description": "Unauthorized"
                     },
                     "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
+                        "description": "Internal Server Error"
                     }
                 }
             }
@@ -990,7 +964,8 @@
         "BearerAuth": {
             "type": "apiKey",
             "name": "Authorization",
-            "in": "header"
+            "in": "header",
+            "x-extension-openapi": "{\"servers\":[{\"url\":\"http://localhost:8080\",\"description\":\"Serveur local\"},{\"url\":\"https://back-end-73xk.onrender.com\",\"description\":\"Serveur de production\"}]}"
         }
     }
 }
