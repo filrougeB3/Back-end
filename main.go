@@ -22,7 +22,6 @@ import (
 // @title NoLedge API
 // @version 1.0
 // @description Backend de l'application NoLedge, une plateforme de quiz en ligne
-// @host localhost:8080
 // @BasePath /
 // @schemes http https
 // @securityDefinitions.apikey BearerAuth
@@ -55,8 +54,11 @@ func main() {
 	router.Use(middleware.Recoverer)
 
 	// Swagger UI
+	router.Get("/*", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"),
+	))
 	router.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("/swagger/doc.json"), // URL relative pour fonctionner sur tous les serveurs
+		httpSwagger.URL("/swagger/doc.json"),
 	))
 
 	// Enregistrement des routes
