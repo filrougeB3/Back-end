@@ -1,7 +1,7 @@
 package quiz
 
 import (
-	"log"
+	"Back-end/pkg/security"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -10,16 +10,12 @@ import (
 func RegisterQuizRoutes(router chi.Router) {
 	router.Route("/quiz", func(r chi.Router) {
 		r.Use(middleware.Logger)
-
-		// ✅ Routes classiques
+		// Routes non protégées
 		r.Get("/", GetAllQuizzes)
-		r.Post("/create", CreateQuiz)
-
-		// ✅ Routes avec ID en query param : /quiz/byQuery?id=42
 		r.Get("/byQuery", GetQuizByID)
-		r.Put("/byQuery", UpdateQuiz)
-		r.Delete("/byQuery", DeleteQuiz)
+		// Routes protégées
+		r.With(security.Middleware).Post("/create", CreateQuiz)
+		r.With(security.Middleware).Put("/byQuery", UpdateQuiz)
+		r.With(security.Middleware).Delete("/byQuery", DeleteQuiz)
 	})
-
-	log.Println("✅ Routes quiz enregistrées !")
 }

@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"Back-end/db"
-	"Back-end/db/dbmodels"
 )
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
@@ -37,9 +36,9 @@ func GetAllQuestions(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var questions []dbmodels.Question
+	var questions []Question
 	for rows.Next() {
-		var q dbmodels.Question
+		var q Question
 		if err := rows.Scan(&q.ID, &q.Title, &q.IdQuiz, &q.IdType); err != nil {
 			respondWithError(w, http.StatusInternalServerError, "Erreur lecture des questions")
 			return
@@ -57,7 +56,7 @@ func GetQuestionByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var q dbmodels.Question
+	var q Question
 	err = db.DB.QueryRow(`SELECT id, title, id_quiz, id_type FROM questions WHERE id = $1`, id).
 		Scan(&q.ID, &q.Title, &q.IdQuiz, &q.IdType)
 	if err != nil {
@@ -69,7 +68,7 @@ func GetQuestionByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateQuestion(w http.ResponseWriter, r *http.Request) {
-	var q dbmodels.Question
+	var q Question
 	if err := json.NewDecoder(r.Body).Decode(&q); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Format invalide")
 		return
@@ -96,7 +95,7 @@ func UpdateQuestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var q dbmodels.Question
+	var q Question
 	if err := json.NewDecoder(r.Body).Decode(&q); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Format invalide")
 		return

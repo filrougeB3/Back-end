@@ -75,10 +75,3 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
-
-// Déconnexion de l'utilisateur
-func LogoutUser(w http.ResponseWriter, r *http.Request) {
-	// Renvoyer simplement le message de déconnexion
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Utilisateur déconnecté"})
-}

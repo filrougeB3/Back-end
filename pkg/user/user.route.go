@@ -9,7 +9,7 @@ import (
 func RegisterUserRoutes(router chi.Router) {
 	router.Route("/user", func(r chi.Router) {
 		// Routes protégées
-		r.With(security.AuthMiddleware).Get("/", GetUser)
-		r.With(security.AuthMiddleware).Put("/", UpdateUser)
+		r.With(security.Middleware).Get("/", GetUser)
+		r.With(security.Middleware).Put("/", UpdateUser)
 	})
 }

@@ -6,7 +6,6 @@ import (
 	"strconv"
 
 	"Back-end/db"
-	"Back-end/db/dbmodels"
 )
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
@@ -30,9 +29,9 @@ func GetAllPropositions(w http.ResponseWriter, r *http.Request) {
 	}
 	defer rows.Close()
 
-	var propositions []dbmodels.Proposition
+	var propositions []Proposition
 	for rows.Next() {
-		var p dbmodels.Proposition
+		var p Proposition
 		if err := rows.Scan(&p.ID, &p.Value, &p.IsCorrect, &p.IdQuestion); err != nil {
 			respondWithError(w, http.StatusInternalServerError, "Erreur lecture des propositions")
 			return
@@ -50,7 +49,7 @@ func GetPropositionByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var p dbmodels.Proposition
+	var p Proposition
 	err = db.DB.QueryRow(`SELECT id, value, is_correct, id_question FROM propositions WHERE id = $1`, id).
 		Scan(&p.ID, &p.Value, &p.IsCorrect, &p.IdQuestion)
 	if err != nil {
@@ -63,7 +62,7 @@ func GetPropositionByID(w http.ResponseWriter, r *http.Request) {
 
 // POST /proposition/create
 func CreateProposition(w http.ResponseWriter, r *http.Request) {
-	var p dbmodels.Proposition
+	var p Proposition
 	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Format invalide")
 		return
@@ -91,7 +90,7 @@ func UpdateProposition(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var p dbmodels.Proposition
+	var p Proposition
 	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Format invalide")
 		return

@@ -1,4 +1,4 @@
-package dbmodels
+package propositions
 
 type Proposition struct {
 	ID         int    `json:"id"`
