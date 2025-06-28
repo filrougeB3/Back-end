@@ -501,7 +501,7 @@
                 }
             }
         },
-        "/quiz/all": {
+        "/quiz": {
             "get": {
                 "description": "Récupère la liste de tous les quiz disponibles",
                 "consumes": [
