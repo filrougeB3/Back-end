@@ -41,7 +41,7 @@ func main() {
 	router := chi.NewRouter()
 	// Configuration CORS
 	cors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"}, // Autorise toutes les origines
+		AllowedOrigins:   []string{"https://front-end-de1c.onrender.com"}, //N'autorise que le front à faire des requêtes
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
