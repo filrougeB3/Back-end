@@ -10,7 +10,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8080",
+    "host": "https://back-end-73xk.onrender.com",
     "basePath": "/",
     "paths": {
         "/auth/login": {
